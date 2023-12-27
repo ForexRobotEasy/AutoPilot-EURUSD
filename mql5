@@ -1,0 +1,72 @@
+
+// AutoPilot EURUSD
+// Developed by Forex Robot Easy Team
+// Website: forexroboteasy.com
+
+// Include necessary libraries and functions
+#include <Trade\Trade.mqh>
+#include <Timeseries\Timeseries.mqh>
+#include <Algorithm\Algorithm.mqh>
+#include <Utilities\Utilities.mqh>
+
+// Define input parameters
+input double StopLoss = 50.0; // Stop loss target in pips
+input string TradingTimes = '08:00-16:00'; // Trading times in HH:MM-HH:MM format
+input bool EnableNewsFilter = true; // Enable news filter
+
+// Define global variables
+CTrade trade; // Trade object
+CTimeseries series; // Time series object
+CAlgorithm algorithm; // Algorithm object
+CUtilities utilities; // Utilities object
+
+// Initialize the trading robot
+void OnInit()
+{
+    trade.SetStopLoss(StopLoss * Point); // Set stop loss target
+    trade.SetTradingTimes(TradingTimes); // Set trading times
+    trade.EnableNewsFilter(EnableNewsFilter); // Enable news filter
+    
+    series.SetSymbol('EURUSD'); // Set symbol
+    series.SetTimeframe(PERIOD_H1); // Set timeframe
+    
+    algorithm.Initialize(); // Initialize the algorithm
+}
+
+// Execute trading operations
+void OnTick()
+{
+    if (!utilities.IsTradingTime()) // Check if it's trading time
+        return;
+    
+    if (utilities.IsNewsEvent()) // Check if it's a news event
+        return;
+    
+    double entryPrice = algorithm.GetEntryPrice(); // Get entry price
+    double exitPrice = algorithm.GetExitPrice(); // Get exit price
+    
+    if (entryPrice > 0.0 && exitPrice > 0.0) // Check if entry and exit prices are valid
+    {
+        trade.Buy(entryPrice); // Execute buy trade
+        trade.Sell(exitPrice); // Execute sell trade
+    }
+}
+
+// Handle errors and log them
+void OnError(const int errorCode)
+{
+    Print('Error:', errorCode); // Print error code
+    // Add code to handle errors and log them
+}
+
+// Test the code thoroughly
+void OnTester()
+{
+    // Add code to backtest the algorithm using historical data
+}
+
+// Provide documentation and instructions
+void OnDeinit(const int reason)
+{
+    // Add code to provide documentation and instructions
+}
